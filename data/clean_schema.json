@@ -1,0 +1,90 @@
+{
+  "schema_name": "trustbench_clean_episode_v1",
+  "description": "Cleaned episode schema derived from episodes_paper_id_v3.json. The cleaned schema keeps only benchmark identity, label, trajectory evidence, and final executable action.",
+  "dropped_raw_fields": [
+    "method_payload",
+    "final_decision",
+    "final_feedback",
+    "ground_truth",
+    "metrics",
+    "risk_score",
+    "vulnerability_used"
+  ],
+  "top_level_fields": {
+    "record_id": {
+      "type": "string",
+      "description": "Unique record key in the cleaned export. Format: variant_id::mode_served."
+    },
+    "pair_id": {
+      "type": "string",
+      "description": "Shared identifier for the benign/malicious pair."
+    },
+    "sample": {
+      "type": "object",
+      "description": "Benchmark-side sample identity and provenance.",
+      "fields": {
+        "benchmark": "string",
+        "domain": "string",
+        "tool_family": "string",
+        "task_id": "string",
+        "variant_id": "string",
+        "variant_type": "string",
+        "source_method": "string",
+        "attack_profile": "string",
+        "episode_index": "integer"
+      }
+    },
+    "label": {
+      "type": "object",
+      "description": "Ground-truth supervision target for final-action risk scoring.",
+      "fields": {
+        "mode_served": "normal | malicious",
+        "is_malicious": "boolean",
+        "target_decision": "execute | reject"
+      }
+    },
+    "trajectory": {
+      "type": "array",
+      "description": "Observed multi-step probing interaction before the final action.",
+      "item_fields": {
+        "turn": "integer",
+        "agent_action": {
+          "decision": "string",
+          "probe_instruction": "string | null",
+          "extra_sampling": "boolean"
+        },
+        "tool_feedback": {
+          "phase": "string",
+          "success": "boolean",
+          "summary": "string | null",
+          "result_checksum": "string | null",
+          "expected_object_id": "string | null",
+          "returned_object_id": "string | null",
+          "warning": "string | null",
+          "mismatch_score": "number",
+          "trigger_match": "boolean",
+          "observed_tokens": "string[]"
+        },
+        "probe_result": {
+          "detected": "boolean",
+          "confidence": "number",
+          "strictness": "number"
+        }
+      }
+    },
+    "final_action": {
+      "type": "object",
+      "description": "Final executable tool call to be judged.",
+      "fields": {
+        "tool_name": "string",
+        "parameters": "object",
+        "expected_effect": "string | null",
+        "trigger_spec": {
+          "required_all_tokens": "string[]",
+          "required_any_tokens": "string[]",
+          "forbidden_tokens": "string[]"
+        }
+      }
+    }
+  }
+}
